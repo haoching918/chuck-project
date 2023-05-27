@@ -103,7 +103,74 @@ class DefaultNote extends Event {
         }
     }
 }
+class ModalBar_ extends Event {
+    0.5::second => dur duration;
+    ModalBar inst => dac;
+    HidMsg choice;
+    Hid keyboard;
+    0 => int tmp;
+    
+    fun void menu(){
+        chout <= IO.newline();
+        chout <= "esc to leave" <= IO.newline();
+        chout <= "z) Marimba" <= IO.newline();
+        chout <= "x) Vibraphone" <= IO.newline();
+        chout <= "c) Agogo" <= IO.newline();
+        chout <= "v) Wood1" <= IO.newline();
+        chout <= "b) Reso" <= IO.newline();
+        chout <= "n) Wood2" <= IO.newline();
+        chout <= "m) Beats" <= IO.newline();
+        chout <= ",) Two Fixed" <= IO.newline();
+        chout <= ".) Clump" <= IO.newline();
+        
+        while (true){
+            input_modalbar(1) => tmp;
+            if (tmp == -1) {
+                break;
+            }
+            this.play();
+        }
+    }
 
+    fun void play() {
+        //<<<input_modalbar(1)>>>;
+        inst => dac;
+        0.5 => inst.modeGain;
+        1 => inst.strike;
+        tmp => inst.preset;
+        0.5 => inst.strikePosition;
+        Std.mtof(50) => inst.freq;
+        duration => now;
+    }
+
+}
+
+fun int input_modalbar(int mode){
+    Hid kb;
+    HidMsg msg;
+    // // hook device with device num
+    0 => int device;
+    // //detect if keyboard is hooked
+    if (kb.openKeyboard(device) == false)  me.exit();
+    // <<<"keyboard", kb.name(), "is ready!">>>;
+    while(true){
+        kb => now;
+        // mode 1 for selection 
+        if (mode == 1) {
+            while(kb.recv(msg)){
+                if (msg.isButtonDown()){
+                    if (msg.which == 1) {
+                        return -1;
+                    }
+                    else {
+                        return msg.which - 44;     
+                    }
+                }
+            }
+        }
+        0.2::second => now; 
+    }
+}
 class SelfMelody extends Event {
     5::second => dur duration;
     0 => int pos;
@@ -310,13 +377,19 @@ fun void playMusic(DefaultNote dn){
         dn.play();
     }
 }
-
+fun void playMusic(ModalBar_ md){
+    while (1) {
+        md => now;
+        md.play();
+    }
+}
 Machine_ myMachine;
 SelfMelody sm;
 DefaultNote dn;
+ModalBar_ md;
 spork ~playMusic(sm);
 spork ~playMusic(dn);
-
+spork ~playMusic(md);
 
 while(1) {
 
@@ -324,6 +397,10 @@ while(1) {
     if(choice == "1") {
         dn.signal();
         dn.menu();
+    }
+    else if (choice == "2") {
+        md.menu();
+        md.signal();
     }
     else if (choice == "3") {
         sm.menu();
