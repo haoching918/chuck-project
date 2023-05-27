@@ -102,13 +102,6 @@ class DefaultNote extends Event {
             }
         }
     }
-    /*
-    fun string menu(){
-        chout <= "use q line of keyboard to play" <= IO.newline();
-        while(input(2) != 0) {
-            
-        }
-    }*/
 }
 
 class SelfMelody extends Event {
@@ -158,41 +151,6 @@ class SelfMelody extends Event {
                 else break;
             }
         }
-        
-        // else if (choice == "4") {
-        //     while (1) {
-        //         chout <= "current volume : " <= gain <= IO.newline();
-        //         chout <= "press ^ or v to adjust" <= IO.newline();
-        //         chout <= "press any else to continue" <= IO.newline();
-        //         input(2) => string choice;
-        //         if (choice == "rise") {
-        //             0.1 +=> gain;
-        //         }
-        //         else if (choice == "fall") {
-        //             0.1 -=> gain;
-        //         }
-        //         else {
-        //             break;
-        //         }
-        //     }
-        // }
-        // else if (choice == "5") {
-        //     while (1) {
-        //         chout <= "current rate : " <= rate <= IO.newline();
-        //         chout <= "press ^ or v to adjust" <= IO.newline();
-        //         chout <= "press any else to continue" <= IO.newline();
-        //         input(2) => string choice;
-        //         if (choice == "rise") {
-        //             1 +=> rate;
-        //         }
-        //         else if (choice == "fall") {
-        //             1 -=> rate;
-        //         }
-        //         else {
-        //             break;
-        //         }
-        //     }
-        // }
     }
     fun void chooseFile() {
         FileIO fio;
