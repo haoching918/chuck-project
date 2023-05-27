@@ -1,16 +1,108 @@
 class DefaultNote extends Event {
-    5::ms => dur duration;
-    60 => int baseNote;
+    50::ms => dur duration;
     60 => int curNote;
-    0.5 => float gain;
+    0.05 => float gain;
     SinOsc s;
     
     fun void setting(){}
+    
+    fun int which2note(int input){
+        if(input >= 30 && input <= 40){
+            30 -=> input;
+            [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17] @=> int notes[];
+            return notes[input];
+        }
+        else if(input >= 17 && input <= 25){
+            17 -=> input;
+            [1, 3, -1, 6, 8, 10, -1, 13, 15] @=> int notes[];
+            return notes[input];
+        }
+        else{
+            return -1;
+        }
+
+    }
+    
     fun void play(){
-        s => dac;
-        Std.mtof(curNote) => s.freq;
-        gain => s.gain;
-    }/*
+        Hid kb;
+        HidMsg msg;
+
+        // // hook device with device num
+        0 => int device;
+        // //detect if keyboard is hooked
+        if (kb.openKeyboard(device) == false)  me.exit();
+        // <<<"keyboard", kb.name(), "is ready!">>>;awseedf
+        
+        while(true){
+            this.gain => s.gain;
+            kb => now;
+            while(kb.recv(msg)) {
+                if (msg.isButtonDown()){
+                    this.which2note(msg.which) => int scale;
+                    s =< dac;
+                    s => dac;
+                    if (scale == -1) {
+                        s =< dac;
+                        continue;
+                    }
+                    Std.mtof( scale + this.curNote ) => float freq;
+                    if( freq > 20000 ){
+                        s =< dac;
+                        continue;
+                    }
+                    freq => s.freq;
+                    
+                    this.duration => now;
+                }
+                else{
+                    s =< dac;
+                }
+                
+            }
+        }
+    }
+    fun void menu(){
+        chout <= IO.newline() <= "   press ESC to leave  " <= IO.newline();
+        chout <= " ______________________" <= IO.newline();
+        chout <= "||W|E|||T|Y|U|||O|P | |" <= IO.newline();
+        chout <= "||_|_|||_|_|_|||_|_|| |" <= IO.newline();
+        chout <= "|A|S|D|F|G|H|J|K|L|:|\"|" <= IO.newline();
+        chout <= "|_|_|_|_|_|_|_|_|_|_|_|" <= IO.newline();
+        chout <= IO.newline() <= "   <- Volume ->  " <= IO.newline();
+        chout <= IO.newline() <= "   v   Tone   ^  " <= IO.newline();
+        
+        while(true){
+            input(3) => string option;
+            if(option == "esc"){
+                break;
+            }
+            else if(option == "rise"){
+                if(this.curNote < 108){
+                    12 +=> this.curNote;
+                    chout <= "rise the tone" <= IO.newline();
+                }
+            }
+            else if(option == "fall"){
+                if(this.curNote > 24){
+                    12 -=> this.curNote;
+                    chout <= "fall the tone" <= IO.newline();
+                }
+            }
+            else if(option == "increase"){
+                if(this.gain < 1){
+                    0.01 +=> this.gain;
+                    chout <= "increse the volume" <= IO.newline();
+                }
+            }
+            else if(option == "decrease"){
+                if (this.gain > 0.01){
+                    0.01 -=> this.gain;
+                    chout <= "decrese the volume" <= IO.newline();
+                }
+            }
+        }
+    }
+    /*
     fun string menu(){
         chout <= "use q line of keyboard to play" <= IO.newline();
         while(input(2) != 0) {
@@ -33,8 +125,7 @@ class SelfMelody extends Event {
         chout <= "1) Start" <= IO.newline();
         chout <= "2) Stop" <= IO.newline();
         chout <= "3) Choose File" <= IO.newline();
-        chout <= "4) Set volume" <= IO.newline();
-        chout <= "5) Set rate" <= IO.newline();
+        chout <= "4) Setting" <= IO.newline();
         input(1) => string choice;
         if (choice == "1") {
             1 => ready; 
@@ -45,40 +136,63 @@ class SelfMelody extends Event {
         else if (choice == "3") {
             chooseFile();
         }
-        else if (choice == "4") {
+        else if (choice == "4"){
+            chout <= IO.newline() <= "   <- Volume ->  " <= IO.newline();
+            chout <= IO.newline() <= "   v   Rate   ^  " <= IO.newline();
             while (1) {
-                chout <= "current volume : " <= gain <= IO.newline();
-                chout <= "press ^ or v to adjust" <= IO.newline();
-                chout <= "press any else to continue" <= IO.newline();
-                input(2) => string choice;
-                if (choice == "200") {
-                    0.1 +=> gain;
-                }
-                else if (choice == "208") {
-                    0.1 -=> gain;
-                }
-                else {
-                    break;
-                }
-            }
-        }
-        else if (choice == "5") {
-            while (1) {
-                chout <= "current rate : " <= rate <= IO.newline();
-                chout <= "press ^ or v to adjust" <= IO.newline();
-                chout <= "press any else to continue" <= IO.newline();
-                input(2) => string choice;
-                if (choice == "200") {
+                chout <= "Volume : " <= gain <= IO.newline();
+                chout <= "Rate : " <= rate <= IO.newline();
+                input(3) => string option;
+                if (option == "rise") {
                     1 +=> rate;
                 }
-                else if (choice == "208") {
+                else if (option == "fall") {
                     1 -=> rate;
                 }
-                else {
-                    break;
+                else if (option == "increase") {
+                    0.1 +=> gain;
                 }
+                else if (option == "decrease") {
+                    0.1 -=> gain;
+                }
+                else break;
             }
         }
+        
+        // else if (choice == "4") {
+        //     while (1) {
+        //         chout <= "current volume : " <= gain <= IO.newline();
+        //         chout <= "press ^ or v to adjust" <= IO.newline();
+        //         chout <= "press any else to continue" <= IO.newline();
+        //         input(2) => string choice;
+        //         if (choice == "rise") {
+        //             0.1 +=> gain;
+        //         }
+        //         else if (choice == "fall") {
+        //             0.1 -=> gain;
+        //         }
+        //         else {
+        //             break;
+        //         }
+        //     }
+        // }
+        // else if (choice == "5") {
+        //     while (1) {
+        //         chout <= "current rate : " <= rate <= IO.newline();
+        //         chout <= "press ^ or v to adjust" <= IO.newline();
+        //         chout <= "press any else to continue" <= IO.newline();
+        //         input(2) => string choice;
+        //         if (choice == "rise") {
+        //             1 +=> rate;
+        //         }
+        //         else if (choice == "fall") {
+        //             1 -=> rate;
+        //         }
+        //         else {
+        //             break;
+        //         }
+        //     }
+        // }
     }
     fun void chooseFile() {
         FileIO fio;
@@ -124,6 +238,22 @@ fun string iCastoStr(int input) {
     ["0","1","2","3","4","5","6","7","8","9"] @=> string num[];
     return num[input];
 }
+fun string which2note(int input){
+    if(input >= 30 && input <= 40){
+        30 -=> input;
+        ["0", "2", "4", "5", "7", "9", "11", "12", "14", "16", "17"] @=> string notes[];
+        return notes[input];
+    }
+    else if(input >= 17 && input <= 25){
+        17 -=> input;
+        ["1", "3", "-1", "6", "8", "10", "-1", "13", "15"] @=> string notes[];
+        return notes[input];
+    }
+    else{
+        return "-1";
+    }
+
+}
 fun string input(int mode){
     Hid kb;
     HidMsg msg;
@@ -132,7 +262,7 @@ fun string input(int mode){
     0 => int device;
     // //detect if keyboard is hooked
     if (kb.openKeyboard(device) == false)  me.exit();
-    // <<<"keyboard", kb.name(), "is ready!">>>;
+    // <<<"keyboard", kb.name(), "is ready!">>>;awseedf
 
     while(true){
         kb => now;
@@ -145,15 +275,46 @@ fun string input(int mode){
                 }   
             }
         }
-        else if (mode == 2) {
+        else if (mode == 2){
             while(kb.recv(msg)){
                 if (msg.isButtonDown()){
-                    // ascii 0 is 48
-                    return Std.itoa(msg.which);     
+                    return which2note(msg.which);     
                 }   
             }
         }
-        0.2::second => now;
+        else if(mode == 3){
+            while(kb.recv(msg)){
+                if (msg.isButtonDown()){
+                    if(msg.which == 1){
+                        return "esc";
+                    }
+                    else if(msg.which == 200){
+                        return "rise";
+                    }
+                    else if(msg.which == 208){
+                        return "fall";
+                    }
+                    else if(msg.which == 205){
+                        return "increase";
+                    }
+                    else if(msg.which == 203){
+                        return "decrease";
+                    }
+                    else{
+                        return "other";
+                    }
+                }   
+            }
+        }
+        else if(mode == 4){
+            if (msg.isButtonUp()){
+                return "esc";
+            }
+            else{
+                return "other";
+            }
+        }
+        0.2::second => now; 
     }
 }
 
@@ -202,7 +363,11 @@ spork ~playMusic(dn);
 while(1) {
 
     showMenu() => string choice;
-    if (choice == "3") {
+    if(choice == "1") {
+        dn.signal();
+        dn.menu();
+    }
+    else if (choice == "3") {
         sm.menu();
     }
     else if (choice == "4") {
