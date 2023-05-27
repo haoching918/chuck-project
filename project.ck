@@ -18,7 +18,7 @@ class DefaultNote extends Event {
         }
     }*/
 }
-class ModalBar extends Event {}
+
 class SelfMelody extends Event {
     5::second => dur duration;
     0 => int pos;
@@ -109,20 +109,32 @@ fun string input(int mode){
                 }   
             }
         }
-        0.2::second => now; 
+        0.2::second => now;
     }
 }
 
-fun string showMenu(){
+fun string showMenu() {
     chout <= IO.newline();
     chout <= "Select a mode:" <= IO.newline();
     chout <= "1) custom midi note" <= IO.newline();
-    chout <= "2) default stk" <= IO.newline();
+    chout <= "2) modal bar" <= IO.newline();
     chout <= "3) self define melody" <= IO.newline();
     chout <= "4) start recording"<= IO.newline();
     chout <= "5) stop recording"<= IO.newline();
     return input(1);
 }
+
+class Machine_ {
+    me.dir() + "rec.ck" => string filePath;
+    int ID;
+    fun void startRecord() {
+        Machine.add(filePath) => ID;
+    }
+    fun void stopRecord() {
+        Machine.remove(ID);
+    }
+}
+
 
 fun void playMusic(SelfMelody sm){
     while (1) {
@@ -137,6 +149,7 @@ fun void playMusic(DefaultNote dn){
     }
 }
 
+Machine_ myMachine;
 SelfMelody sm;
 DefaultNote dn;
 spork ~playMusic(sm);
@@ -148,6 +161,14 @@ while(1) {
     showMenu() => string choice;
     if (choice == "3") {
         sm.menu();
+    }
+    else if (choice == "4") {
+        chout <= "Start recording" <= IO.newline();
+        myMachine.startRecord();
+    }
+    else if (choice == "5") {
+        chout <= "Stop recording" <= IO.newline();
+        myMachine.stopRecord();
     }
 
     sm.signal();
