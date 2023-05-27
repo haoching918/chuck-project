@@ -93,7 +93,7 @@ class SelfMelody extends Event {
             cherr <= "can't open file" <= IO.nl();
             me.exit();
         }
-        // variablew31 to read into
+        // variable to read into
         string str;
         string fileNames[10];
         0 => int cnt;
