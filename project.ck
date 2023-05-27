@@ -68,6 +68,8 @@ class DefaultNote extends Event {
         chout <= "||_|_|||_|_|_|||_|_|| |" <= IO.newline();
         chout <= "|A|S|D|F|G|H|J|K|L|:|\"|" <= IO.newline();
         chout <= "|_|_|_|_|_|_|_|_|_|_|_|" <= IO.newline();
+        chout <= IO.newline() <= "   <- Volume ->  " <= IO.newline();
+        chout <= IO.newline() <= "   V   Tone   ^  " <= IO.newline();
         
         while(true){
             input(3) => string option;
