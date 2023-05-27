@@ -33,6 +33,8 @@ class SelfMelody extends Event {
         chout <= "1) Start" <= IO.newline();
         chout <= "2) Stop" <= IO.newline();
         chout <= "3) Choose File" <= IO.newline();
+        chout <= "4) Set volume" <= IO.newline();
+        chout <= "5) Set rate" <= IO.newline();
         input(1) => string choice;
         if (choice == "1") {
             1 => ready; 
@@ -40,8 +42,46 @@ class SelfMelody extends Event {
         else if (choice == "2") {
             0 => ready;
         }
-        else {
+        else if (choice == "3") {
             chooseFile();
+        }
+        else if (choice == "4") {
+            while (1) {
+                chout <= "current volume : " <= gain <= IO.newline();
+                chout <= "press up or down to adjust" <= IO.newline();
+                chout <= "press any else to continue" <= IO.newline();
+                input(2) => string choice;
+                if (choice == "200") {
+                    0.1 +=> gain;
+                }
+                else if (choice == "208") {
+                    0.1 -=> gain;
+                }
+                else {
+                    break;
+                }
+                
+            }
+            
+        }
+        else if (choice == "5") {
+            while (1) {
+                chout <= "current rate : " <= rate <= IO.newline();
+                chout <= "press up or down to adjust" <= IO.newline();
+                chout <= "press any else to continue" <= IO.newline();
+                input(2) => string choice;
+                if (choice == "200") {
+                    1 +=> rate;
+                }
+                else if (choice == "208") {
+                    1 -=> rate;
+                }
+                else {
+                    break;
+                }
+                
+            }
+            
         }
     }
     fun void chooseFile() {
@@ -53,7 +93,7 @@ class SelfMelody extends Event {
             cherr <= "can't open file" <= IO.nl();
             me.exit();
         }
-        // variable to read into
+        // variablew31 to read into
         string str;
         string fileNames[10];
         0 => int cnt;
@@ -109,6 +149,14 @@ fun string input(int mode){
                 }   
             }
         }
+        else if (mode == 2) {
+            while(kb.recv(msg)){
+                if (msg.isButtonDown()){
+                    // ascii 0 is 48
+                    return Std.itoa(msg.which);     
+                }   
+            }
+        }
         0.2::second => now;
     }
 }
@@ -134,7 +182,6 @@ class Machine_ {
         Machine.remove(ID);
     }
 }
-
 
 fun void playMusic(SelfMelody sm){
     while (1) {
