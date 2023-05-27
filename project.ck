@@ -404,6 +404,7 @@ while(1) {
     }
     else if (choice == "3") {
         sm.menu();
+        sm.signal();
     }
     else if (choice == "4") {
         chout <= "Start recording" <= IO.newline();
@@ -413,7 +414,6 @@ while(1) {
         chout <= "Stop recording" <= IO.newline();
         myMachine.stopRecord();
     }
-
-    sm.signal();
+    
     1::second => now;   
 }
