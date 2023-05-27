@@ -48,7 +48,7 @@ class SelfMelody extends Event {
         else if (choice == "4") {
             while (1) {
                 chout <= "current volume : " <= gain <= IO.newline();
-                chout <= "press up or down to adjust" <= IO.newline();
+                chout <= "press ^ or v to adjust" <= IO.newline();
                 chout <= "press any else to continue" <= IO.newline();
                 input(2) => string choice;
                 if (choice == "200") {
@@ -60,14 +60,12 @@ class SelfMelody extends Event {
                 else {
                     break;
                 }
-                
             }
-            
         }
         else if (choice == "5") {
             while (1) {
                 chout <= "current rate : " <= rate <= IO.newline();
-                chout <= "press up or down to adjust" <= IO.newline();
+                chout <= "press ^ or v to adjust" <= IO.newline();
                 chout <= "press any else to continue" <= IO.newline();
                 input(2) => string choice;
                 if (choice == "200") {
@@ -79,9 +77,7 @@ class SelfMelody extends Event {
                 else {
                     break;
                 }
-                
             }
-            
         }
     }
     fun void chooseFile() {
