@@ -1,17 +1,24 @@
 class DefaultNote extends Event {
-    float duration;
-    int baseNote;
-
-    float gain;
+    5::ms => dur duration;
+    60 => int baseNote;
+    60 => int curNote;
+    0.5 => float gain;
     SinOsc s;
     
     fun void setting(){}
     fun void play(){
-        
-    }
-    fun void menu(){}
+        s => dac;
+        Std.mtof(curNote) => s.freq;
+        gain => s.gain;
+    }/*
+    fun string menu(){
+        chout <= "use q line of keyboard to play" <= IO.newline();
+        while(input(2) != 0) {
+            
+        }
+    }*/
 }
-
+class ModalBar extends Event {}
 class SelfMelody extends Event {
     5::second => dur duration;
     0 => int pos;
@@ -102,7 +109,7 @@ fun string input(int mode){
                 }   
             }
         }
-       0.2::second => now; 
+        0.2::second => now; 
     }
 }
 
@@ -112,6 +119,8 @@ fun string showMenu(){
     chout <= "1) custom midi note" <= IO.newline();
     chout <= "2) default stk" <= IO.newline();
     chout <= "3) self define melody" <= IO.newline();
+    chout <= "4) start recording"<= IO.newline();
+    chout <= "5) stop recording"<= IO.newline();
     return input(1);
 }
 
