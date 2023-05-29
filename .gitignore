@@ -1,1 +1,3 @@
 *.wav
+/sound/*.wav
+/sound/sound.txt
