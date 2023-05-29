@@ -183,17 +183,21 @@ class SelfMelody extends Event {
     fun void menu() {
         chout <= IO.newline();
         chout <= "1) Start" <= IO.newline();
-        chout <= "2) Choose File" <= IO.newline();
-        chout <= "3) Setting" <= IO.newline();
+        chout <= "2) Stop" <= IO.newline();
+        chout <= "3) Choose File" <= IO.newline();
+        chout <= "4) Setting" <= IO.newline();
         input(1) => string choice;
         0 => ready;
         if (choice == "1") {
-            1 => ready;
+            1 => ready; 
         }
         else if (choice == "2") {
+            my_player =< dac;
+        }
+        else if (choice == "3") {
             chooseFile();
         }
-        else if (choice == "3"){
+        else if (choice == "4"){
             chout <= IO.newline() <= "   <- Volume ->  " <= IO.newline();
             chout <= IO.newline() <= "   v   Rate   ^  " <= IO.newline();
             while (1) {
